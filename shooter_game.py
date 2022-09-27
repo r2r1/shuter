@@ -3,9 +3,10 @@ from random import randint
 #импортируем функцию для засекания времени, 
 #чтобы интерпретатор не искал эту функцию в pygame модуле time, даём ей другое название сами
 from time import time as timer 
- 
+pygame.init()
 #фоновая музыка
-mixer.init()
+
+pygame.mixer.init()
 mixer.music.load('space.ogg')
 mixer.music.play()
 fire_sound = mixer.Sound('fire.ogg')
@@ -37,10 +38,10 @@ class GameSprite(sprite.Sprite):
  #конструктор класса
    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
        #вызываем конструктор класса (Sprite):
-       sprite.Sprite.__init__(self)
+       GameSprite.sprite.Sprite.__init__(self)
  
        #каждый спрайт должен хранить свойство image - изображение
-       self.image = transform.scale(image.load(player_image), (size_x, size_y))
+       self.image = GameSprite.transform.scale(GameSprite.image.load(player_image), (size_x, size_y))
        self.speed = player_speed
  
        #каждый спрайт должен хранить свойство rect - прямоугольник, в который он вписан
@@ -55,10 +56,10 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite):
    #метод для управления спрайтом стрелками клавиатуры
    def update(self):
-       keys = key.get_pressed()
-       if keys[K_LEFT] and self.rect.x > 5:
+       keys = GameSprite.key.get_pressed()
+       if keys[GameSprite.K_LEFT] and self.rect.x > 5:
            self.rect.x -= self.speed
-       if keys[K_RIGHT] and self.rect.x < win_width - 80:
+       if keys[GameSprite.K_RIGHT] and self.rect.x < win_width - 80:
            self.rect.x += self.speed
  #метод "выстрел" (используем место игрока, чтобы создать там пулю)
    def fire(self):
@@ -89,24 +90,24 @@ class Bullet(GameSprite):
 #создаем окошко
 win_width = 700
 win_height = 500
-display.set_caption("Shooter")
-window = display.set_mode((win_width, win_height))
-background = transform.scale(image.load(img_back), (win_width, win_height))
+GameSprite.display.set_caption("Shooter")
+window = GameSprite.display.set_mode((win_width, win_height))
+background = GameSprite.transform.scale(GameSprite.image.load(img_back), (win_width, win_height))
  
 #создаем спрайты
 ship = Player(img_hero, 5, win_height - 100, 80, 100, 10)
  
-monsters = sprite.Group()
+monsters = GameSprite.sprite.Group()
 for i in range(1, 6):
    monster = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
    monsters.add(monster)
 
-asteroids = sprite.Group()
+asteroids = GameSprite.sprite.Group()
 for i in range(1, 3):
     asteroid = Enemy(img_ast, randint(30, win_width - 30), -40, 80, 50, randint(1, 7))
     asteroids.add(asteroid)
  
-bullets = sprite.Group()
+bullets = GameSprite.sprite.Group()
  
 #переменная "игра закончилась": как только там True, в основном цикле перестают работать спрайты
 finish = False
@@ -114,12 +115,12 @@ finish = False
 run = True #флаг сбрасывается кнопкой закрытия окна
 while run:
    #событие нажатия на кнопку Закрыть
-    for e in event.get():
-        if e.type == QUIT:
+    for e in GameSprite.event.get():
+        if e.type ==GameSprite.QUIT:
             run = False
         #событие нажатия на пробел - спрайт стреляет
-        elif e.type == KEYDOWN:
-            if e.key == K_SPACE:
+        elif e.type == GameSprite.KEYDOWN:
+            if e.key == GameSprite.K_SPACE:
                 #проверяем, сколько выстрелов сделано и не происходит ли перезарядка
                 if num_fire < 5 and rel_time == False:
                     num_fire = num_fire + 1
@@ -167,9 +168,9 @@ while run:
             monsters.add(monster)
 
         #если спрайт коснулся врага, уменьшает жизнь
-        if sprite.spritecollide(ship, monsters, False) or sprite.spritecollide(ship, asteroids, False):
-            sprite.spritecollide(ship, monsters, True)
-            sprite.spritecollide(ship, asteroids, True)
+        if GameSprite.sprite.spritecollide(ship, monsters, False) or GameSprite.sprite.spritecollide(ship, asteroids, False):
+            GameSprite.sprite.spritecollide(ship, monsters, True)
+            GameSprite.sprite.spritecollide(ship, asteroids, True)
             life = life -1
             print(life)
 
@@ -201,7 +202,7 @@ while run:
         text_life = font1.render(str(life), 1, life_color)
         window.blit(text_life, (650, 10))
 
-        display.update()
+        GameSprite.display.update()
 
            
     #бонус: автоматический перезапуск игры
